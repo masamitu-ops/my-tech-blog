@@ -2,8 +2,10 @@
 title: '初めてのブログ投稿'
 description: 'AWS AmplifyとAstroでブログを作りました！'
 pubDate: '2026-01-25'
-heroImage: '@/_assets/blog-placeholder-3.jpg'  
+# heroImage の行を完全に消すか、空にします
+heroImage: ''
 ---
+
 
 ## ついにブログを公開しました！
 
