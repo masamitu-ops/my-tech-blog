@@ -2,7 +2,7 @@
 title: "「AI×AWS×Notion」で、自分専用のITニュース要約botを爆速で構築してみた"
 description: "最新記事をAIが読み込み、初学者向けに3行で要約してNotionに届けるシステムを構築しました。"
 pubDate: "2026-01-29"
-heroImage: "/blog-placeholder-3.jpg"
+heroImage: '../../assets/blog-placeholder-3.jpg'
 ---
 
 毎日溢れるITニュース。チェックしたいけれど、専門用語が多くて理解に時間がかかる……。
