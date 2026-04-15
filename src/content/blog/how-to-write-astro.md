@@ -2,7 +2,7 @@
 title: 'Astroブログの構成と運用のまとめ'
 description: '画像のパス指定や記事の追加方法についての備忘録です。'
 pubDate: 'Apr 15 2026'
-heroImage: '/blog-placeholder-about.jpg'
+heroImage: '../../assets/blog-placeholder-3.jpg'
 ---
 
 ## Astroブログの基本構成
