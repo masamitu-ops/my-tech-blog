@@ -2,6 +2,7 @@
 title: 'AWS S3にブログをデプロイしました！'
 description: 'GitHub Actionsを使って自動デプロイ環境を構築した記録です。'
 pubDate: 'Apr 15 2026'
+heroImage: '/blog-placeholder-about.jpg'
 ---
 
 ## ついにブログが開設されました
