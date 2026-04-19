@@ -1,33 +1,30 @@
 ---
 /**
- * PagefindのUIを表示せず、検索機能（API）のみを
- * ブラウザのグローバルオブジェクト（window.pagefind）にロードするコンポーネント。
+ * PagefindのUIを表示せず、検索機能のみをロードするコンポーネント。
+ * Viteのビルド時チェックを完全に回避する「文字列実行」版。
  */
 ---
 
 <script>
-  /**
-   * Pagefindはビルド後に生成されるため、通常のimportではビルドエラーになります。
-   * そのため、実行時に非同期で読み込む手法（Dynamic Import）をとります。
-   */
   async function loadPagefind() {
-    try {
-      // @ts-ignore
-      const pagefind = await import("/pagefind/pagefind.js");
-      // windowオブジェクトにセットして、news.astro側のscriptから叩けるようにする
-      // @ts-ignore
-      window.pagefind = pagefind;
-    } catch (e) {
-      console.error("Pagefind load error:", e);
+    if (typeof window !== "undefined") {
+      try {
+        // new Function を使うことで、Viteの静的解析（インポートチェック）から完全に隠します
+        const dynamicImport = new Function('path', 'return import(path)');
+        const pagefind = await dynamicImport("/pagefind/pagefind.js");
+        
+        // @ts-ignore
+        window.pagefind = pagefind;
+        console.log("Pagefind loaded successfully");
+      } catch (e) {
+        console.error("Pagefind load error:", e);
+      }
     }
   }
 
-  // ブラウザ上でのみ実行
-  if (typeof window !== "undefined") {
-    loadPagefind();
-  }
+  loadPagefind();
 </script>
 
 <style>
-  /* 何も表示しないため、スタイルは不要です */
+  /* 表示要素なし */
 </style>
