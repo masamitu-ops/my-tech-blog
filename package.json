@@ -14,6 +14,7 @@
     "@astrojs/sitemap": "^3.6.1",
     "@notionhq/client": "^5.19.0",
     "astro": "^5.16.8",
+    "pagefind": "^1.5.2",
     "sharp": "^0.34.3"
   }
 }
