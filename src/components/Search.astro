@@ -1,26 +1,33 @@
 ---
-import '@pagefind/default-ui/css/ui.css';
+/**
+ * PagefindのUIを表示せず、検索機能（API）のみを
+ * ブラウザのグローバルオブジェクト（window.pagefind）にロードするコンポーネント。
+ */
 ---
 
-<div id="search" class="my-8"></div>
-
----
-/* 画面には何も表示せず、Pagefindのスクリプトだけを読み込む「黒子」コンポーネント */
----
 <script>
-  // Pagefindの検索ライブラリをブラウザに読み込ませる
-  // @ts-ignore
-  import("/pagefind/pagefind.js").then((res) => {
-    window.pagefind = res;
-  });
+  /**
+   * Pagefindはビルド後に生成されるため、通常のimportではビルドエラーになります。
+   * そのため、実行時に非同期で読み込む手法（Dynamic Import）をとります。
+   */
+  async function loadPagefind() {
+    try {
+      // @ts-ignore
+      const pagefind = await import("/pagefind/pagefind.js");
+      // windowオブジェクトにセットして、news.astro側のscriptから叩けるようにする
+      // @ts-ignore
+      window.pagefind = pagefind;
+    } catch (e) {
+      console.error("Pagefind load error:", e);
+    }
+  }
+
+  // ブラウザ上でのみ実行
+  if (typeof window !== "undefined") {
+    loadPagefind();
+  }
 </script>
 
-<style is:global>
-  /* ダークモードでも見やすいように色を調整 */
-  :root {
-    --pagefind-ui-primary: #3b82f6; 
-    --pagefind-ui-text: #ffffff;
-    --pagefind-ui-background: #1f2937;
-    --pagefind-ui-border: #374151;
-  }
+<style>
+  /* 何も表示しないため、スタイルは不要です */
 </style>
