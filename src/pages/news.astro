@@ -1,9 +1,7 @@
 ---
 import Layout from '../layouts/BlogPost.astro';
-// 1. Searchコンポーネントをインポート
-import Search from '../components/Search.astro';
+import Search from '../components/Search.astro'; // インポートは残す
 
-// Notion API設定
 const apiKey = import.meta.env.NOTION_API_KEY;
 const databaseId = import.meta.env.NOTION_DATABASE_ID;
 
@@ -13,7 +11,6 @@ let allTags = [];
 try {
   let hasMore = true;
   let cursor = undefined;
-
   while (hasMore) {
     const response = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
       method: 'POST',
@@ -23,20 +20,17 @@ try {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        page_size: 100, 
+        page_size: 100,
         start_cursor: cursor,
         sorts: [{ property: '情報の鮮度', direction: 'descending' }],
       }),
     });
-
     const data = await response.json();
     if (!response.ok) throw new Error(data.message);
-
     const fetchedItems = data.results.map((page: any) => {
       const dateStr = page.properties['情報の鮮度']?.date?.start || '';
       const publishedDate = new Date(dateStr);
       const diffDays = (new Date().getTime() - publishedDate.getTime()) / (1000 * 60 * 60 * 24);
-      
       return {
         title: page.properties['タイトル']?.title[0]?.plain_text || 'No Title',
         url: page.properties['Source URL']?.url || null,
@@ -47,12 +41,10 @@ try {
         isImportant: page.properties['重要']?.checkbox || false,
       };
     });
-
     newsItems = [...newsItems, ...fetchedItems];
     hasMore = data.has_more;
     cursor = data.next_cursor;
   }
-
   allTags = [...new Set(newsItems.flatMap(item => item.tags))].sort();
 } catch (e) {
   console.error("Notion API Error:", e);
@@ -60,22 +52,28 @@ try {
 ---
 
 <Layout title="IT News Library">
+  <Search />
+
   <div class="news-container">
     <header class="page-header">
-      <h1 class="text-center text-3xl font-bold mb-6">IT News Library</h1>
-      
-      <div class="search-section-wrapper mb-12">
-        <Search />
+      <div class="search-section">
+        <div class="search-wrapper">
+          <input type="text" id="news-search" placeholder="Search news by keywords..." autocomplete="off" />
+          <span class="search-icon">🔍</span>
+        </div>
+        <div id="selected-tags-container" class="selected-tags-area"></div>
       </div>
-
-      <div class="selected-tags-area" id="selected-tags-container"></div>
     </header>
 
     <div class="content-layout">
       <main class="news-feed" data-pagefind-body>
         <div id="news-grid">
           {newsItems.map((item) => (
-            <article class="modern-card" data-title={item.title} data-tags={item.tags.join(',')} data-important={item.isImportant ? "true" : "false"}>
+            <article class="modern-card" 
+                     data-title={item.title} 
+                     data-tags={item.tags.join(',')} 
+                     data-summary={item.summary}
+                     data-important={item.isImportant ? "true" : "false"}>
               <div class="card-top">
                 <div class="badge-row">
                   {item.isImportant && <span class="badge badge-star">★ Important</span>}
@@ -83,7 +81,6 @@ try {
                 </div>
                 <time class="post-date">{item.date}</time>
               </div>
-
               <div class="card-body">
                 {item.url && (
                   <div class="site-icon">
@@ -108,7 +105,8 @@ try {
         </div>
       </main>
 
-      <aside class="sidebar" data-pagefind-ignore> <div class="sidebar-card">
+      <aside class="sidebar">
+        <div class="sidebar-card">
           <div class="sidebar-header">
             <h3>Filter Tags</h3>
             <button id="clear-filters" class="text-btn">Clear All</button>
@@ -127,38 +125,93 @@ try {
 </Layout>
 
 <style>
-  /* 既存のスタイルを維持 */
+  /* スタイルは元の「いけた！！」時のものをそのまま貼ってください (省略) */
   .news-container { max-width: 1140px; margin: 0 auto; padding: 2rem 1rem; }
-  .search-section-wrapper { max-width: 700px; margin: 0 auto; }
-  /* ... (以下、元のスタイルをそのまま適用) ... */
-  .page-header { margin-bottom: 2rem; }
-  .selected-tags-area { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; min-height: 32px; margin-top: 1rem; }
+  .page-header { margin-bottom: 3rem; }
+  .search-section { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+  .search-wrapper { position: relative; width: 100%; max-width: 600px; }
+  #news-search { 
+    width: 100%; padding: 1rem 1.5rem 1rem 3.5rem; 
+    border-radius: 50px; border: 1px solid #e0e0e0; 
+    font-size: 1rem; transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  }
+  .search-icon { position: absolute; left: 1.5rem; top: 50%; transform: translateY(-50%); opacity: 0.5; }
+  .selected-tags-area { display: flex; flex-wrap: wrap; gap: 8px; max-width: 800px; justify-content: center; min-height: 32px; }
+  .active-tag-badge { background: #ff9900; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; gap: 6px; cursor: pointer; animation: fadeIn 0.2s ease-out; }
   .content-layout { display: grid; grid-template-columns: 1fr 300px; gap: 2.5rem; }
-  .modern-card { background: #fff; border: 1px solid #f0f0f0; border-radius: 16px; padding: 1.8rem; margin-bottom: 1.5rem; transition: all 0.3s ease; }
-  /* 省略：元のCSSを継続して使用してください */
+  .modern-card { background: #fff; border: 1px solid #f0f0f0; border-radius: 16px; padding: 1.8rem; margin-bottom: 1.5rem; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+  .modern-card:hover { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(0,0,0,0.06); border-color: #ff9900; }
+  .modern-card[data-important="true"] { border-left: 6px solid #ffa502; }
+  .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .badge-row { display: flex; gap: 6px; }
+  .badge { font-size: 0.7rem; font-weight: bold; padding: 3px 10px; border-radius: 6px; text-transform: uppercase; }
+  .badge-new { background: #ff4757; color: #fff; }
+  .badge-star { background: #ffa502; color: #fff; }
+  .post-date { font-size: 0.85rem; color: #999; }
+  .card-body { display: flex; gap: 1.2rem; }
+  .site-icon { width: 50px; height: 50px; flex-shrink: 0; background: #f9f9f9; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid #eee; }
+  .site-icon img { width: 28px; height: 28px; }
+  .card-title { font-size: 1.35rem; font-weight: 800; margin-bottom: 0.8rem; line-height: 1.3; color: #1a1a1a; }
+  .mini-tag { display: inline-block; background: #f0f2f5; color: #666; font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; margin: 0 4px 4px 0; cursor: pointer; }
+  .card-desc { font-size: 0.95rem; color: #444; line-height: 1.6; margin: 1rem 0; white-space: pre-wrap; }
+  .card-action { font-size: 0.9rem; font-weight: bold; color: #ff9900; text-decoration: none; }
+  .sidebar-card { position: sticky; top: 2rem; background: #fcfcfc; border-radius: 16px; padding: 1.5rem; border: 1px solid #eee; display: flex; flex-direction: column; max-height: 85vh; }
+  .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-shrink: 0; }
+  .tag-scroll-area { overflow-y: auto; padding-right: 4px; }
+  .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.5rem; align-content: flex-start; }
+  .tag-btn { background: #fff; border: 1px solid #e0e0e0; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; margin: 2px; }
+  .tag-btn.active { background: #ff9900; color: #fff; border-color: #ff9900; font-weight: bold; }
+  .text-btn { background: none; border: none; color: #999; font-size: 0.75rem; cursor: pointer; text-decoration: underline; }
 </style>
 
 <script>
-  // タグフィルタリングのロジックはPagefindとは別に「現在の画面内での絞り込み」として残しておきます
   let activeTags = new Set();
+  const searchInput = document.getElementById('news-search') as HTMLInputElement;
   const cards = document.querySelectorAll('.modern-card');
   const tagBtns = document.querySelectorAll('.tag-btn');
   const selectedTagsContainer = document.getElementById('selected-tags-container');
+  const noResultsMsg = document.getElementById('no-results');
 
-  const updateList = () => {
+  const updateList = async () => {
+    const term = searchInput ? searchInput.value.toLowerCase() : "";
     let visibleCount = 0;
+
+    // --- Pagefindロジックの統合 ---
+    let pagefindResults = [];
+    // @ts-ignore
+    if (term && window.pagefind) {
+      // @ts-ignore
+      const search = await window.pagefind.search(term);
+      const results = await Promise.all(search.results.map(r => r.data()));
+      // 検索結果に含まれるタイトルのリストを作成
+      pagefindResults = results.map(r => r.meta.title);
+    }
+
     cards.forEach(card => {
       const el = card as HTMLElement;
+      const title = el.dataset.title || "";
+      const summary = el.dataset.summary || "";
       const cardTags = el.dataset.tags?.split(',') || [];
+      
+      // タグの絞り込み
       const matchesTags = activeTags.size === 0 || Array.from(activeTags).every(t => cardTags.includes(t as string));
+      
+      // キーワード検索（Pagefindの結果、または簡易テキスト検索）
+      const matchesSearch = term === "" || 
+                            title.toLowerCase().includes(term) || 
+                            summary.toLowerCase().includes(term) ||
+                            pagefindResults.includes(title);
 
-      if (matchesTags) {
+      if (matchesSearch && matchesTags) {
         el.style.display = "block";
         visibleCount++;
       } else {
         el.style.display = "none";
       }
     });
+
+    if (noResultsMsg) noResultsMsg.style.display = visibleCount === 0 ? "block" : "none";
     renderSelectedTags();
   };
 
@@ -192,9 +245,12 @@ try {
     });
   });
 
+  searchInput?.addEventListener('input', updateList);
+
   document.getElementById('clear-filters')?.addEventListener('click', () => {
     activeTags.clear();
     tagBtns.forEach(b => b.classList.remove('active'));
+    if (searchInput) searchInput.value = "";
     updateList();
   });
 </script>
