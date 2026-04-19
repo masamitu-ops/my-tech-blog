@@ -1,0 +1,76 @@
+---
+import Layout from '../layouts/BlogPost.astro';
+
+// パラメータを整理し、自動調整（autofocus）を有効にしたURL
+const MIRO_EMBED_URL = "https://miro.com/app/live-embed/uXjVGAPl6bg=/?embedMode=view_only_without_ui&autofocus=true";
+---
+
+<Layout
+	title="Skill Roadmap"
+	description="AWSスキルマップと学習ロードマップ"
+	pubDate={new Date('April 19 2026')}
+>
+	<p>
+		現在はAWS Certified Solutions Architect – Associate (SAA-C03) の合格に向けて、
+		AWSの各サービスの関係性やインフラ構成をMiroで可視化しながら学習を進めています。
+	</p>
+
+	<div class="full-width-container">
+		<div class="miro-frame">
+			<iframe 
+				src={MIRO_EMBED_URL}
+				frameborder="0" 
+				scrolling="no" 
+				allow="fullscreen; clipboard-read; clipboard-write" 
+				allowfullscreen
+			></iframe>
+		</div>
+	</div>
+
+	<style>
+		.full-width-container {
+			/* 記事の横幅制限を無視して左右一杯に広げる魔法のコード */
+			width: 100vw;
+			position: relative;
+			left: 50%;
+			right: 50%;
+			margin-left: -50vw;
+			margin-right: -50vw;
+			margin-top: 2rem;
+			margin-bottom: 2rem;
+		}
+
+		.miro-frame {
+			width: 90%; /* 画面の90%を使用 */
+			margin: 0 auto;
+			border-radius: 16px;
+			overflow: hidden;
+			box-shadow: 0 15px 45px rgba(0,0,0,0.15);
+			background-color: #ffffff;
+		}
+
+		iframe {
+			width: 100%;
+			height: 850px; /* さらに高さを確保 */
+			display: block;
+		}
+
+		@media (max-width: 720px) {
+			.full-width-container {
+				width: 100%;
+				left: 0;
+				margin-left: 0;
+			}
+			iframe {
+				height: 500px;
+			}
+		}
+	</style>
+
+	<div class="details">
+		<h2>このロードマップについて</h2>
+		<p>
+			図解することで、単なる暗記ではなく「なぜこのサービスを組み合わせるのか」という設計思想の理解を深めることを目的としています。
+		</p>
+	</div>
+</Layout>

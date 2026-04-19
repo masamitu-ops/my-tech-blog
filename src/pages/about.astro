@@ -1,25 +1,26 @@
 ---
-import AboutHeroImage from '../assets/blog-placeholder-about.jpg';
 import Layout from '../layouts/BlogPost.astro';
----
+// 方式B: 画像をアセットとしてインポート
+import aboutHeroImage from '../assets/blog-placeholder-about.jpg';
 
----
-import Layout from '../layouts/BlogPost.astro';
+const title = "About Me";
+const description = "このサイトの管理人と構築方針について";
+const pubDate = new Date('August 08 2021');
 ---
 
 <Layout
-	title="About Me"
-	description="このサイトの管理人と構築方針について"
-	pubDate={new Date('August 08 2021')}
-	heroImage="/blog-placeholder-about.jpg"
+	title={title}
+	description={description}
+	pubDate={pubDate}
+	heroImage={aboutHeroImage} 
 >
 	<h2>自己紹介</h2>
 	<p>
-		はじめまして、管理人の masa です！<br>
-		現在、AWSやgithub関連の学習・ハンズオン を中心に活動しています。
+		はじめまして、管理人の masa です！<br />
+		現在、AWSやGitHub関連の学習・ハンズオンを中心に活動しています。
 	</p>
 	<p>
-		現在IT企業に勤務しAWSを業務上使用しているので個人学習としてAWSの環境構築を中心に様々なサービスについて勉強しております。
+		現在IT企業に勤務し、業務でもAWSを使用しているため、個人学習として環境構築を中心に様々なサービスを勉強しています。
 	</p>
 
 	<h2>このポートフォリオの構築方針</h2>
@@ -27,14 +28,14 @@ import Layout from '../layouts/BlogPost.astro';
 		このサイトは、単なる情報の記録場所ではなく、技術的な挑戦を具現化する場として構築しています。
 	</p>
 	<ul>
-		<li><strong>Astro v5 (Static Site Generator):</strong> 高速な表示速度と開発体験の両立を目指し、最新のAstroを採用。</li>
-		<li><strong>AWS Amplify:</strong> インフラ管理を効率化し、CI/CDパイプラインによる継続的なデプロイ環境を構築。</li>
-		<li><strong>Node.js 20 Lts:</strong> 最新の安定版環境でのビルドを担保。</li>
-		<li><strong>アウトプットの継続:</strong> 自分が直面した技術課題や解決プロセスを言語化し、知識の定着を図る。</li>
+		<li><strong>Astro v5 (Static Site Generator):</strong> 最新のAstroを採用し、高速な表示速度を目指しています。</li>
+		<li><strong>AWS Amplify:</strong> CI/CDパイプラインを構築し、効率的なデプロイ環境を実現しています。</li>
+		<li><strong>Node.js 20 LTS:</strong> 安定した最新環境でのビルドを担保しています。</li>
+		<li><strong>アウトプットの継続:</strong> 直面した技術課題や解決プロセスを言語化し、知識の定着を図っています。</li>
 	</ul>
 
 	<h2>今後の目標</h2>
 	<p>
-		今後はEC2サーバーを構築しながらGASとNotionを使って構築した生成AIのシステムをAWSのサービスに移行していく予定です。
+		今後はEC2サーバーを構築しながら、GASとNotionで構築した現在の生成AIシステムを、順次AWS上のサービスへ移行していく予定です。
 	</p>
 </Layout>
