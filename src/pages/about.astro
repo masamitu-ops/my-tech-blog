@@ -4,38 +4,55 @@ import Layout from '../layouts/BlogPost.astro';
 import aboutHeroImage from '../assets/blog-placeholder-about.jpg';
 
 const title = "About Me";
-const description = "このサイトの管理人と構築方針について";
-const pubDate = new Date('August 08 2021');
+const description = "このサイトの管理人と構築方針、および自動化システムについて";
+const pubDate = new Date('April 19 2026'); // 本日の日付に更新
 ---
 
 <Layout
 	title={title}
 	description={description}
 	pubDate={pubDate}
-	heroImage={aboutHeroImage} 
+	heroImage={aboutHeroImage}
 >
 	<h2>自己紹介</h2>
 	<p>
 		はじめまして、管理人の masa です！<br />
-		現在、AWSやGitHub関連の学習・ハンズオンを中心に活動しています。
+		ITプロフェッショナルとして、AWSやGitHub Actionsを活用したインフラ構築・運用自動化を中心に活動しています。
 	</p>
 	<p>
-		現在IT企業に勤務し、業務でもAWSを使用しているため、個人学習として環境構築を中心に様々なサービスを勉強しています。
+		現在IT企業に勤務し、業務でもAWSを使用しています。個人プロジェクトにおいても、実務に即したアーキテクチャの設計とハンズオンを通じて、技術の深掘りを続けています。
 	</p>
 
-	<h2>このポートフォリオの構築方針</h2>
+	<h2>このポートフォリオの構築・自動化方針</h2>
 	<p>
-		このサイトは、単なる情報の記録場所ではなく、技術的な挑戦を具現化する場として構築しています。
+		このサイトは、技術的な挑戦を具現化する場として構築しており、以下のモダンな構成を採用しています。
 	</p>
 	<ul>
-		<li><strong>Astro v5 (Static Site Generator):</strong> 最新のAstroを採用し、高速な表示速度を目指しています。</li>
-		<li><strong>AWS Amplify:</strong> CI/CDパイプラインを構築し、効率的なデプロイ環境を実現しています。</li>
-		<li><strong>Node.js 20 LTS:</strong> 安定した最新環境でのビルドを担保しています。</li>
-		<li><strong>アウトプットの継続:</strong> 直面した技術課題や解決プロセスを言語化し、知識の定着を図っています。</li>
+		<li><strong>Astro v5 (Static Site Generator):</strong> 高速な表示速度と開発体験の両立。</li>
+		<li><strong>Headless CMS (Notion API):</strong> Notionをデータベースとして活用し、記事管理を効率化。</li>
+		<li><strong>AWS Amplify:</strong> マネージドサービスによるセキュアなホスティングとCI/CDの実現。</li>
+		<li><strong>GitHub Actions (Automation):</strong> 1日2回の定期ビルドによる、運用コストゼロの自動更新システム。</li>
 	</ul>
+
+	<h2>システム構成：自動更新ライブラリ</h2>
+	<p>
+		特に本サイトの「News」セクションは、以下のイベント駆動型アーキテクチャで完全自動化されています。
+	</p>
+	<div style="background-color: #1a202c; padding: 1.5rem; border-radius: 0.5rem; border: 1px solid #2d3748; margin: 1rem 0;">
+		<p style="margin: 0; font-size: 0.9rem; color: #a0aec0;">
+			<strong>[Workflow]</strong><br />
+			1. <strong>Notion</strong> に技術ニュースを集約。<br />
+			2. <strong>GitHub Actions</strong> が cron (9:00 / 18:00) で Webhook をキック。<br />
+			3. <strong>AWS Amplify</strong> が最新データを取得してビルド・デプロイ。
+		</p>
+	</div>
+	<p>
+		これにより、「手動でのデプロイ作業」を一切排除した、疎結合でメンテナンス性の高いシステムを実現しました。
+	</p>
 
 	<h2>今後の目標</h2>
 	<p>
-		今後はEC2サーバーを構築しながら、GASとNotionで構築した現在の生成AIシステムを、順次AWS上のサービスへ移行していく予定です。
+		AWS Certified Solutions Architect - Associate (SAA-C03) の取得に向け、さらに複雑なトラフィック制御やセキュリティ強化のハンズオンを進めていく予定です。
+		また、現在のサーバーレス構成に加え、コンテナ技術（ECS/Fargate）を用いたサービスの展開も計画しています。
 	</p>
 </Layout>
