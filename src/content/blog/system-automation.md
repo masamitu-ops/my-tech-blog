@@ -2,7 +2,7 @@
 title: "ポートフォリオ自動更新システムの構築：Notion × GitHub Actions × Amplify"
 description: "NotionをCMSとして活用し、GitHub Actionsで1日2回の自動更新を実現したシステム構成について。"
 pubDate: "Apr 19 2026"
-heroImage: "../assets/blog-placeholder-about.jpg" 
+heroImage: "../../assets/blog-placeholder-about.jpg"  <-- ここを ../../ に修正
 ---
 
 ## 今回のアップデート内容 (News)
