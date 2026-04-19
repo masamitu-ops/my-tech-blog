@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/BlogPost.astro';
-import Search from '../components/Search.astro'; // インポートは残す
+import Search from '../components/Search.astro';
 
 const apiKey = import.meta.env.NOTION_API_KEY;
 const databaseId = import.meta.env.NOTION_DATABASE_ID;
@@ -125,7 +125,6 @@ try {
 </Layout>
 
 <style>
-  /* スタイルは元の「いけた！！」時のものをそのまま貼ってください (省略) */
   .news-container { max-width: 1140px; margin: 0 auto; padding: 2rem 1rem; }
   .page-header { margin-bottom: 3rem; }
   .search-section { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
@@ -136,33 +135,49 @@ try {
     font-size: 1rem; transition: all 0.3s ease;
     box-shadow: 0 2px 10px rgba(0,0,0,0.03);
   }
+  #news-search:focus { outline: none; border-color: #ff9900; box-shadow: 0 4px 15px rgba(255,153,0,0.15); }
   .search-icon { position: absolute; left: 1.5rem; top: 50%; transform: translateY(-50%); opacity: 0.5; }
   .selected-tags-area { display: flex; flex-wrap: wrap; gap: 8px; max-width: 800px; justify-content: center; min-height: 32px; }
-  .active-tag-badge { background: #ff9900; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; gap: 6px; cursor: pointer; animation: fadeIn 0.2s ease-out; }
+  .active-tag-badge { background: #ff9900; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; gap: 6px; cursor: pointer; }
   .content-layout { display: grid; grid-template-columns: 1fr 300px; gap: 2.5rem; }
-  .modern-card { background: #fff; border: 1px solid #f0f0f0; border-radius: 16px; padding: 1.8rem; margin-bottom: 1.5rem; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+  
+  .modern-card { background: #fff; border: 1px solid #f0f0f0; border-radius: 16px; padding: 1.8rem; margin-bottom: 1.5rem; transition: all 0.3s ease; }
   .modern-card:hover { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(0,0,0,0.06); border-color: #ff9900; }
   .modern-card[data-important="true"] { border-left: 6px solid #ffa502; }
+  
   .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
   .badge-row { display: flex; gap: 6px; }
   .badge { font-size: 0.7rem; font-weight: bold; padding: 3px 10px; border-radius: 6px; text-transform: uppercase; }
   .badge-new { background: #ff4757; color: #fff; }
   .badge-star { background: #ffa502; color: #fff; }
   .post-date { font-size: 0.85rem; color: #999; }
+  
   .card-body { display: flex; gap: 1.2rem; }
   .site-icon { width: 50px; height: 50px; flex-shrink: 0; background: #f9f9f9; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid #eee; }
   .site-icon img { width: 28px; height: 28px; }
+  
   .card-title { font-size: 1.35rem; font-weight: 800; margin-bottom: 0.8rem; line-height: 1.3; color: #1a1a1a; }
-  .mini-tag { display: inline-block; background: #f0f2f5; color: #666; font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; margin: 0 4px 4px 0; cursor: pointer; }
-  .card-desc { font-size: 0.95rem; color: #444; line-height: 1.6; margin: 1rem 0; white-space: pre-wrap; }
+  .mini-tag { display: inline-block; background: #f0f2f5; color: #666; font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; margin: 0 4px 4px 0; }
+  
+  .card-desc { 
+    font-size: 0.95rem; color: #444; line-height: 1.6; margin: 1rem 0;
+    white-space: pre-wrap; /* 改行を維持 */
+  }
+  
   .card-action { font-size: 0.9rem; font-weight: bold; color: #ff9900; text-decoration: none; }
-  .sidebar-card { position: sticky; top: 2rem; background: #fcfcfc; border-radius: 16px; padding: 1.5rem; border: 1px solid #eee; display: flex; flex-direction: column; max-height: 85vh; }
-  .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-shrink: 0; }
-  .tag-scroll-area { overflow-y: auto; padding-right: 4px; }
-  .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.5rem; align-content: flex-start; }
-  .tag-btn { background: #fff; border: 1px solid #e0e0e0; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; margin: 2px; }
-  .tag-btn.active { background: #ff9900; color: #fff; border-color: #ff9900; font-weight: bold; }
-  .text-btn { background: none; border: none; color: #999; font-size: 0.75rem; cursor: pointer; text-decoration: underline; }
+  
+  .sidebar-card { position: sticky; top: 2rem; background: #fcfcfc; border-radius: 16px; padding: 1.5rem; border: 1px solid #eee; }
+  .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .tag-btn { background: #fff; border: 1px solid #e0e0e0; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; }
+  .tag-btn.active { background: #ff9900; color: #fff; border-color: #ff9900; }
+  
+  .no-results-msg { text-align: center; padding: 4rem 0; color: #999; }
+  .msg-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+  @media (max-width: 900px) {
+    .content-layout { grid-template-columns: 1fr; }
+    .sidebar { order: -1; }
+  }
 </style>
 
 <script>
@@ -177,15 +192,18 @@ try {
     const term = searchInput ? searchInput.value.toLowerCase() : "";
     let visibleCount = 0;
 
-    // --- Pagefindロジックの統合 ---
+    // --- Pagefindロジック ---
     let pagefindResults = [];
     // @ts-ignore
     if (term && window.pagefind) {
-      // @ts-ignore
-      const search = await window.pagefind.search(term);
-      const results = await Promise.all(search.results.map(r => r.data()));
-      // 検索結果に含まれるタイトルのリストを作成
-      pagefindResults = results.map(r => r.meta.title);
+      try {
+        // @ts-ignore
+        const search = await window.pagefind.search(term);
+        const results = await Promise.all(search.results.map(r => r.data()));
+        pagefindResults = results.map(r => r.meta.title);
+      } catch (e) {
+        console.error("Search error:", e);
+      }
     }
 
     cards.forEach(card => {
@@ -194,10 +212,9 @@ try {
       const summary = el.dataset.summary || "";
       const cardTags = el.dataset.tags?.split(',') || [];
       
-      // タグの絞り込み
       const matchesTags = activeTags.size === 0 || Array.from(activeTags).every(t => cardTags.includes(t as string));
       
-      // キーワード検索（Pagefindの結果、または簡易テキスト検索）
+      // Pagefindの結果、もしくは簡易文字列マッチ
       const matchesSearch = term === "" || 
                             title.toLowerCase().includes(term) || 
                             summary.toLowerCase().includes(term) ||
@@ -221,10 +238,12 @@ try {
     activeTags.forEach(tag => {
       const badge = document.createElement('div');
       badge.className = 'active-tag-badge';
-      badge.innerHTML = `<span>${tag}</span><span style="font-size:1.1rem; opacity:0.8;">×</span>`;
+      badge.innerHTML = `<span>${tag}</span><span style="margin-left:5px">×</span>`;
       badge.onclick = () => {
-        const targetBtn = document.querySelector(`.tag-btn[data-tag="${tag}"]`);
-        if (targetBtn) (targetBtn as HTMLElement).click();
+        activeTags.delete(tag);
+        const btn = document.querySelector(`.tag-btn[data-tag="${tag}"]`);
+        if (btn) btn.classList.remove('active');
+        updateList();
       };
       selectedTagsContainer.appendChild(badge);
     });

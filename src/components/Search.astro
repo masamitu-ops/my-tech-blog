@@ -1,30 +1,16 @@
----
-/**
- * PagefindのUIを表示せず、検索機能のみをロードするコンポーネント。
- * Viteのビルド時チェックを完全に回避する「文字列実行」版。
- */
----
-
 <script>
   async function loadPagefind() {
     if (typeof window !== "undefined") {
       try {
-        // new Function を使うことで、Viteの静的解析（インポートチェック）から完全に隠します
+        // Viteのビルドエラーを回避するための動的ロード
         const dynamicImport = new Function('path', 'return import(path)');
         const pagefind = await dynamicImport("/pagefind/pagefind.js");
-        
         // @ts-ignore
         window.pagefind = pagefind;
-        console.log("Pagefind loaded successfully");
       } catch (e) {
         console.error("Pagefind load error:", e);
       }
     }
   }
-
   loadPagefind();
 </script>
-
-<style>
-  /* 表示要素なし */
-</style>
