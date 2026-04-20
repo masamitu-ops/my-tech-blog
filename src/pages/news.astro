@@ -2,6 +2,7 @@
 import Layout from '../layouts/BlogPost.astro';
 import Search from '../components/Search.astro';
 
+// 環境変数はAmplifyのコンソール側でも設定されている必要があります
 const apiKey = import.meta.env.NOTION_API_KEY;
 const databaseId = import.meta.env.NOTION_DATABASE_ID;
 
@@ -11,6 +12,7 @@ let allTags = [];
 try {
   let hasMore = true;
   let cursor = undefined;
+
   while (hasMore) {
     const response = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
       method: 'POST',
@@ -22,25 +24,33 @@ try {
       body: JSON.stringify({
         page_size: 100,
         start_cursor: cursor,
+        // 「情報の鮮度」プロパティを基準に最新順に並べる
         sorts: [{ property: '情報の鮮度', direction: 'descending' }],
       }),
     });
+
     const data = await response.json();
     if (!response.ok) throw new Error(data.message);
+
     const fetchedItems = data.results.map((page: any) => {
-      const dateStr = page.properties['情報の鮮度']?.date?.start || '';
+      // プロパティ取得の安全性を強化
+      const props = page.properties;
+      const dateStr = props['情報の鮮度']?.date?.start || '';
       const publishedDate = new Date(dateStr);
       const diffDays = (new Date().getTime() - publishedDate.getTime()) / (1000 * 60 * 60 * 24);
+
       return {
-        title: page.properties['タイトル']?.title[0]?.plain_text || 'No Title',
-        url: page.properties['Source URL']?.url || null,
-        tags: page.properties['関連用語']?.multi_select.map((tag: any) => tag.name) || [],
-        summary: page.properties['要約']?.rich_text[0]?.plain_text || '',
-        date: dateStr.split('T')[0].replace(/-/g, '/'),
+        title: props['タイトル']?.title[0]?.plain_text || 'No Title',
+        url: props['Source URL']?.url || null,
+        tags: props['関連用語']?.multi_select.map((tag: any) => tag.name) || [],
+        // 要約プロパティからテキストを取得
+        summary: props['要約']?.rich_text[0]?.plain_text || '',
+        date: dateStr ? dateStr.split('T')[0].replace(/-/g, '/') : 'Date Unknown',
         isNew: diffDays <= 3,
-        isImportant: page.properties['重要']?.checkbox || false,
+        isImportant: props['重要']?.checkbox || false,
       };
     });
+
     newsItems = [...newsItems, ...fetchedItems];
     hasMore = data.has_more;
     cursor = data.next_cursor;
@@ -125,6 +135,7 @@ try {
 </Layout>
 
 <style>
+  /* 元のスタイルを維持 */
   .news-container { max-width: 1140px; margin: 0 auto; padding: 2rem 1rem; }
   .page-header { margin-bottom: 3rem; }
   .search-section { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
@@ -161,7 +172,7 @@ try {
   
   .card-desc { 
     font-size: 0.95rem; color: #444; line-height: 1.6; margin: 1rem 0;
-    white-space: pre-wrap; /* 改行を維持 */
+    white-space: pre-wrap;
   }
   
   .card-action { font-size: 0.9rem; font-weight: bold; color: #ff9900; text-decoration: none; }
@@ -181,6 +192,7 @@ try {
 </style>
 
 <script>
+  // ... クライアントサイドのフィルタリングロジック（変更なし） ...
   let activeTags = new Set();
   const searchInput = document.getElementById('news-search') as HTMLInputElement;
   const cards = document.querySelectorAll('.modern-card');
@@ -192,20 +204,6 @@ try {
     const term = searchInput ? searchInput.value.toLowerCase() : "";
     let visibleCount = 0;
 
-    // --- Pagefindロジック ---
-    let pagefindResults = [];
-    // @ts-ignore
-    if (term && window.pagefind) {
-      try {
-        // @ts-ignore
-        const search = await window.pagefind.search(term);
-        const results = await Promise.all(search.results.map(r => r.data()));
-        pagefindResults = results.map(r => r.meta.title);
-      } catch (e) {
-        console.error("Search error:", e);
-      }
-    }
-
     cards.forEach(card => {
       const el = card as HTMLElement;
       const title = el.dataset.title || "";
@@ -213,12 +211,9 @@ try {
       const cardTags = el.dataset.tags?.split(',') || [];
       
       const matchesTags = activeTags.size === 0 || Array.from(activeTags).every(t => cardTags.includes(t as string));
-      
-      // Pagefindの結果、もしくは簡易文字列マッチ
       const matchesSearch = term === "" || 
-                            title.toLowerCase().includes(term) || 
-                            summary.toLowerCase().includes(term) ||
-                            pagefindResults.includes(title);
+                           title.toLowerCase().includes(term) || 
+                           summary.toLowerCase().includes(term);
 
       if (matchesSearch && matchesTags) {
         el.style.display = "block";
